@@ -38,6 +38,18 @@ Marque esse projeto com uma estrela 🌟
 3. *Infraestrutura*: Publicar aplicação com seu SSL customizado em máquina virtual
     - Você aprendeu a gerar SSL local, o desafio é você criar um certificado (pode ser com o *Let's Encrypt*) e adicionar na sua aplicação
 
+## Checklist desafios
+
+- [ ] Salvar arquivos na AWS ou outro serviço de storage
+- [ ] Manter 100% coverage no banckend
+- [ ] Criar testes do frontend e atingir 100% coverage
+- [ ] Publicar com SSL customizado
+- [ ] Corrigir problema de porcentagem no upload
+- [ ] Teste de integração de rota GET
+- [ ] Tratar erros no backend
+- [ ] Mostrar progresso individual do upload
+
+
 ### Considerações
 - Tire suas dúvidas sobre os desafios em nossa comunidade, o objetivo é você aprender de forma divertida. Surgiu dúvidas? Pergunte por lá!
 
