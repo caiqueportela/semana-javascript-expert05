@@ -11,7 +11,7 @@
     "test:cov": "NODE_OPTIONS=--experimental-vm-modules npx jest --no-cache --runInBand --coverage"
   },
   "keywords": [],
-  "author": "",
+  "author": "caiqueportela",
   "license": "ISC",
   "devDependencies": {
     "jest": "^27.1.1"
