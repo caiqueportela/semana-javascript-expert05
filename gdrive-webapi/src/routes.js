@@ -1,51 +1,74 @@
-import {logger} from './logger.js';
+import { dirname, resolve } from 'path';
+import { pipeline } from 'stream/promises';
+import { fileURLToPath, parse } from 'url';
 import FileHelper from './fileHelper.js';
-import {dirname, resolve} from 'path';
-import {fileURLToPath} from 'url';
+import { logger } from './logger.js';
+import { UploadHandler } from './uploadHandler.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const defaultDownloadsFolder = resolve(__dirname, '../', 'downloads');
 
 export default class Routes {
 
-  io;
+	io;
 
-  constructor(downloadsFolder = defaultDownloadsFolder) {
-    this.downloadsFolder = downloadsFolder;
-    this.fileHelper = FileHelper;
-  }
+	constructor(downloadsFolder = defaultDownloadsFolder) {
+		this.downloadsFolder = downloadsFolder;
+		this.fileHelper = FileHelper;
+	}
 
-  setSocketInstance(io) {
-    this.io = io;
-  }
+	setSocketInstance(io) {
+		this.io = io;
+	}
 
-  async defaultRoute(request, response) {
-    response.end('Ola mundoso')
-  }
+	async defaultRoute(request, response) {
+		response.end('Ola mundoso');
+	}
 
-  async options(request, response) {
-    response.writeHead(204);
-    response.end();
-  }
+	async options(request, response) {
+		response.writeHead(204);
+		response.end();
+	}
 
-  async post(request, response) {
-    logger.info('postzao');
-    response.end();
-  }
+	async post(request, response) {
+		const { headers } = request;
 
-  async get(request, response) {
-    const files = await this.fileHelper.getFilesStatus(this.downloadsFolder);
+		const { query: { socketId } } = parse(request.url, true);
+		const uploadHandler = new UploadHandler({
+			io: this.io,
+			socketId,
+			downloadsFolder: this.downloadsFolder,
+		});
 
-    response.writeHead(200);
-    response.end(JSON.stringify(files));
-  }
+		const onFinish = (response) => () => {
+			response.writeHead(200);
+			const data = JSON.stringify({ result: 'Files uploaded with success!' });
+			response.end(data);
+		};
 
-  handler(request, response) {
-    response.setHeader('Access-Control-Allow-Origin', '*');
+		const busboyInstance = uploadHandler.registerEvents(headers, onFinish(response));
 
-    const chosen = this[request.method.toLowerCase()] || this.defaultRoute;
+		await pipeline(
+			request,
+			busboyInstance,
+		);
 
-    return chosen.apply(this, [request, response]);
-  }
+		logger.info('Request finished with success!');
+	}
+
+	async get(request, response) {
+		const files = await this.fileHelper.getFilesStatus(this.downloadsFolder);
+
+		response.writeHead(200);
+		response.end(JSON.stringify(files));
+	}
+
+	handler(request, response) {
+		response.setHeader('Access-Control-Allow-Origin', '*');
+
+		const chosen = this[request.method.toLowerCase()] || this.defaultRoute;
+
+		return chosen.apply(this, [request, response]);
+	}
 
 }
