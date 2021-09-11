@@ -124,3 +124,5 @@ certificates/*
 !certificates/sslproblem.png
 gdrive-webapi/certificates/*
 gdrive-webapp/certificates/*
+gdrive-webapi/downloads/*
+!gdrive-webapi/downloads/banana.jpg
